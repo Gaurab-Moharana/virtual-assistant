@@ -9,12 +9,22 @@ import userRouter from "./routes/user.routes.js";
 import geminiResponse from "./gemini.js";
 
 const app = express();
-app.use(
-  cors({
-    origin: "https://virtual-assistant-rlhf.onrender.com",
-    credentials: true,
-  })
-);
+
+const allowedOrigins = [
+  "http://localhost:5173", 
+  "https://virtual-assistant-rlhf.onrender.com"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 
 const port = process.env.PORT || 5000;
 app.use(express.json());
